@@ -1,0 +1,10 @@
+{
+    "name": "expenses",
+    "version": "1.0.0",
+    "description": "",
+    "dependencies": {},
+    "license": "MIT"
+    "scripts": {
+        "zip": "zip dist/expenses.zip src/handlers/expense/*.js"
+    }
+}
