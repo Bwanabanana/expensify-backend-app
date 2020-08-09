@@ -1,32 +1,52 @@
+var AWS = require('aws-sdk');
+
+var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10', region: 'eu-west-2' });
+
 exports.handler = (event, context, callback) => {
 
     console.log("Environment Variables\n" + JSON.stringify(process.env, null, 2));
     console.log("Event\n" + JSON.stringify(event, null, 2));
     console.log("Context\n", JSON.stringify(context, null, 2));
 
-    const response = {
-        expenses: [
-            {
-                id: "19e2f530-22a0-4d50-8621-50f8b9c922e9",
-                description: "Rent",
-                note: "You're paying my rent",
-                amount: 15001,
-                createdAt: 1594651588721
-            }, {
-                id: "19e2f530-22a0-4d50-8621-50f8b9c922e1",
-                description: "Gas",
-                note: "Jumping Jack Flash",
-                amount: 10000,
-                createdAt: 1594751588721
-            }, {
-                id: "19e2f530-22a0-4d50-8621-50f8b9c922e0",
-                description: "Travel",
-                note: "Travel to unravel",
-                amount: 100000,
-                createdAt: 1594851588721
-            }
-        ]
+    var params = {
+        ExpressionAttributeValues: {
+            ':u': { S: event.sub }
+        },
+        KeyConditionExpression: 'userKey = :u',
+        ProjectionExpression: 'userKey, dataKey, dataValue',
+        TableName: 'expensify-user-data'
     };
 
-    callback(null, JSON.stringify(response));
+    ddb.query(params, function (err, data) {
+
+        if (err) {
+            console.log("Failed to retrieve user data", err);
+
+            callback(err);
+
+        } else {
+            console.log("Retreived user data", data);
+
+            var expensesData = [];
+            data.Items.forEach(function (element) {
+
+                console.log("user: " + element.userKey.S + ", key: " + element.dataKey.S + ", value: " + JSON.stringify(element.dataValue));
+
+                const expense = {
+                    "id": element.dataKey.S,
+                    "description": element.dataValue.M.description.S,
+                    "note": element.dataValue.M.note.S,
+                    "amount": parseInt(element.dataValue.M.amount.N, 10),
+                    "createdAt": parseInt(element.dataValue.M.createdAt.N, 10)
+                };
+
+                expensesData.push(expense);
+            });
+
+            console.log("result: " + JSON.stringify({ expenses: expensesData }));
+
+            callback(null, JSON.stringify({ expenses: expensesData }));
+        }
+    });
+
 };

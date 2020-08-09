@@ -2,9 +2,11 @@
     "name": "expenses",
     "version": "1.0.0",
     "description": "",
-    "dependencies": {},
-    "license": "MIT"
+    "dependencies": {
+        "aws-sdk": "^2.729.0"
+    },
+    "license": "MIT",
     "scripts": {
-        "zip": "zip dist/expenses.zip src/handlers/expense/*.js"
+        "zip": "zip -r dist/expenses.zip src/handlers/expense/*.js node_modules"
     }
 }
