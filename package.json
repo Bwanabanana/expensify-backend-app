@@ -7,6 +7,6 @@
     },
     "license": "MIT",
     "scripts": {
-        "zip": "zip -r dist/expenses.zip src/handlers/expense/*.js node_modules"
+        "zip": "zip -r dist/expenses.zip src/handlers/expense/*.js node_modules/base64-js node_modules/uuid"
     }
 }
