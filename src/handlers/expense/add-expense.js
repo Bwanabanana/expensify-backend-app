@@ -34,7 +34,7 @@ exports.handler = (event, context, callback) => {
         } else {
             console.log("Added user data successfully", data);
 
-            callback(null, JSON.stringify({ uuid: dataKey }));
+            callback(null, JSON.stringify({ id: dataKey }));
         }
     });
 
